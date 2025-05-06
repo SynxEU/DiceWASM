@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace Dice.Pages.Helpers;
 
-public class SessionStorage
+public class SessionStorage : ISessionStorage
 {
     private readonly IJSRuntime jsRuntime;
     public SessionStorage(IJSRuntime jsRuntime)

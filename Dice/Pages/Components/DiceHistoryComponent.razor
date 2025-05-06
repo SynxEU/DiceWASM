@@ -1,5 +1,6 @@
-@inject LocalStorage LocalStorage
+@inject ILocalStorageCS LocalStorageCs
 @using Dice.Model
+@using Dice.Pages.Helpers
 
 <div>
     <h5>Seneste kast:</h5>
@@ -8,7 +9,7 @@
         {
             foreach (var item in Data)
             {
-                <li>@item.Value 🎲 - @item.Date.ToShortDateString()</li>
+                <li>@item.Value 🎲 - @item.Date.ToShortDateString() @(TimeSpan.FromTicks(item.Time.Ticks).ToString(@"hh\:mm\:ss"))</li>
             }
         }
     </ul>
@@ -19,7 +20,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var history = await LocalStorage.GetItemAsync<List<DiceModel>>("dice_history");
+        List<DiceModel> history = await LocalStorageCs.GetItemAsync<List<DiceModel>>("dice_history");
         if (history != null)
         {
             Data = history.OrderByDescending(x => x.Id).Take(10);
@@ -30,7 +31,8 @@
     {
         if (Data != null && Data.Any())
         {
-            await LocalStorage.SetItemAsync("dice_history", Data.ToList());
+            await LocalStorageCs.SetItemAsync("dice_history", Data.OrderBy(x => x.Id).Take(10));
+            StateHasChanged();
         }
     }
 }

@@ -1,10 +1,11 @@
 using Microsoft.JSInterop;
 using System.Text.Json;
+using Dice.Pages.Helpers;
 
-public class LocalStorage
+public class LocalStorageCs : ILocalStorageCS
 {
     private readonly IJSRuntime jsRuntime;
-    public LocalStorage(IJSRuntime jsRuntime)
+    public LocalStorageCs(IJSRuntime jsRuntime)
     {
         this.jsRuntime = jsRuntime;
     }

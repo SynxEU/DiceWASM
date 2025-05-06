@@ -1,7 +1,6 @@
 @using Dice.Model
 @using Dice.Pages.Helpers
-@inject SessionStorage SessionStorage
-
+@inject ISessionStorage SessionStorage
 @if (numberOfSides != 0)
 {
     <RadzenStack Orientation="Orientation.Vertical" gap="1rem" JustifyContent="JustifyContent.Center">
@@ -28,7 +27,6 @@ else
 
 @code {
     private int numberOfSides = 0;
-    private string filepath = Path.Combine(Environment.CurrentDirectory, "Throws.csv");
     private static int currentId = 1;
     private int lastValue;
 
@@ -43,7 +41,7 @@ else
 
         var model = new DiceModel
         {
-            Id = GetNextId(),
+            Id = ++currentId,
             Value = value,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
             Time = DateTime.UtcNow.TimeOfDay
@@ -51,24 +49,6 @@ else
 
         await SessionStorage.SetItemAsync("last_throw", model);
         await UpdateUi.InvokeAsync(model);
-    }
-
-
-
-    private int GetNextId()
-    {
-        if (!File.Exists(filepath)) return 1;
-
-        var lines = File.ReadAllLines(filepath);
-        if (lines.Length <= 1) return 1;
-
-        string lastLine = lines.Last();
-        if (int.TryParse(lastLine.Split(',')[0], out int lastId))
-        {
-            return lastId + 1;
-        }
-
-        return 1;
     }
 
 }

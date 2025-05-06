@@ -1,8 +1,8 @@
 @page "/Dice"
 @using Dice.Model
 @using Dice.Pages.Components
-@inject LocalStorage LocalStorage
-
+@using Dice.Pages.Helpers
+@inject ILocalStorageCS LocalStorageCs
 
 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
     <DiceComponent UpdateUi="UpdateToUi" />
@@ -15,7 +15,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        List<DiceModel>? storedData = await LocalStorage.GetItemAsync<List<DiceModel>>("dice_throws");
+        List<DiceModel>? storedData = await LocalStorageCs.GetItemAsync<List<DiceModel>>("dice_throws");
         if (storedData != null && storedData.Any())
         {
             Data = storedData.OrderByDescending(x => x.Id).Take(10).ToList();
@@ -25,8 +25,8 @@
     private async Task UpdateToUi(DiceModel value)
     {
         Data.Add(value);
-        Data = Data.OrderByDescending(dm => dm.Id).Take(10).ToList();
-        await LocalStorage.SetItemAsync("dice_throws", Data);
+        Data = Data.OrderByDescending(x => x.Id).Take(10).ToList();
+        await LocalStorageCs.SetItemAsync("dice_throws", Data);
         StateHasChanged();
     }
 }
