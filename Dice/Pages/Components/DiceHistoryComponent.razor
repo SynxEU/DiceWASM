@@ -1,0 +1,36 @@
+@inject LocalStorage LocalStorage
+@using Dice.Model
+
+<div>
+    <h5>Seneste kast:</h5>
+    <ul>
+        @if (Data != null)
+        {
+            foreach (var item in Data)
+            {
+                <li>@item.Value 🎲 - @item.Date.ToShortDateString()</li>
+            }
+        }
+    </ul>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<DiceModel> Data { get; set; } = new List<DiceModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var history = await LocalStorage.GetItemAsync<List<DiceModel>>("dice_history");
+        if (history != null)
+        {
+            Data = history.OrderByDescending(x => x.Id).Take(10);
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Data != null && Data.Any())
+        {
+            await LocalStorage.SetItemAsync("dice_history", Data.ToList());
+        }
+    }
+}
