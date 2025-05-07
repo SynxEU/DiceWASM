@@ -26,11 +26,11 @@ else
 }
 
 @code {
-    private int numberOfSides = 0;
+    private int numberOfSides;
     private static int currentId = 1;
     private int lastValue;
 
-    [Parameter] public EventCallback<DiceModel> UpdateUi { get; set; }
+    [Parameter] public EventCallback<DiceModel> SaveThrowCallback { get; set; }
     
     async Task ThrowDice()
     {
@@ -48,7 +48,7 @@ else
         };
 
         await SessionStorage.SetItemAsync("last_throw", model);
-        await UpdateUi.InvokeAsync(model);
+        await SaveThrowCallback.InvokeAsync(model);
     }
 
 }

@@ -5,7 +5,7 @@
 @inject ILocalStorageCS LocalStorageCs
 
 <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center">
-    <DiceComponent UpdateUi="UpdateToUi" />
+    <DiceComponent SaveThrowCallback="SaveThrowHandler" />
 </RadzenStack>
 
 <DiceHistoryComponent Data="Data" />
@@ -22,7 +22,7 @@
         }
     }
 
-    private async Task UpdateToUi(DiceModel value)
+    private async Task SaveThrowHandler(DiceModel value)
     {
         Data.Add(value);
         Data = Data.OrderByDescending(x => x.Id).Take(10).ToList();
