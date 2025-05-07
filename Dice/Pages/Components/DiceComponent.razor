@@ -1,6 +1,8 @@
 @using Dice.Model
 @using Dice.Pages.Helpers
 @inject ISessionStorage SessionStorage
+@inject ILocalStorageCS LocalStorage
+
 @if (numberOfSides != 0)
 {
     <RadzenStack Orientation="Orientation.Vertical" gap="1rem" JustifyContent="JustifyContent.Center">
@@ -27,11 +29,10 @@ else
 
 @code {
     private int numberOfSides;
-    private static int currentId = 1;
     private int lastValue;
 
     [Parameter] public EventCallback<DiceModel> SaveThrowCallback { get; set; }
-    
+
     async Task ThrowDice()
     {
         Random random = new();
@@ -39,9 +40,9 @@ else
         lastValue = value;
         StateHasChanged();
 
-        var model = new DiceModel
+        DiceModel model = new DiceModel
         {
-            Id = ++currentId,
+            Id = await GetNewId(),
             Value = value,
             Date = DateOnly.FromDateTime(DateTime.UtcNow),
             Time = DateTime.UtcNow.TimeOfDay
@@ -51,4 +52,13 @@ else
         await SaveThrowCallback.InvokeAsync(model);
     }
 
+    async Task<int> GetNewId()
+    {
+        List<DiceModel>? storedData = await LocalStorage.GetItemAsync<List<DiceModel>>("dice_history");
+        if (storedData != null && storedData.Any())
+        {
+            return storedData.Max(sd => sd.Id) + 1;
+        }
+        return 1;
+    }
 }
