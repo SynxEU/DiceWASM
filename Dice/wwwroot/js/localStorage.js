@@ -10,9 +10,15 @@ window.localStorageHelper = {
 
 window.sessionStorageHelper = {
     set: function (key, value) {
-        sessionStorage.setItem(key, value);
+        const json = JSON.stringify(value);
+        const encodedValue = btoa(unescape(encodeURIComponent(json)));
+        sessionStorage.setItem(key, encodedValue);
     },
     get: function (key) {
-        return sessionStorage.getItem(key);
+        const encodedValue = sessionStorage.getItem(key);
+        if (!encodedValue) return null;
+        const json = decodeURIComponent(escape(atob(encodedValue)));
+        return JSON.parse(json);
     }
 };
+
